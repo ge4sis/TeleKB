@@ -1,153 +1,104 @@
-# TeleKB (Telegram Knowledge Base)
+# 🚀 TeleKB (Telegram Knowledge Base)
 
-TeleKB is a local GUI application that collects messages from your subscribed Telegram channels and groups. It intelligently detects non-Korean messages, translates them using Google's Gemini API, and saves them as Markdown files for your personal knowledge base.
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Gemini API](https://img.shields.io/badge/AI-Gemini-orange.svg)](https://aistudio.google.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
-
-*   **Channel Management**: Easily add or remove (hard delete) channels and groups via a GUI.
-*   **Smart Collection**: Collects only new messages since the last run.
-*   **Auto Translation**: Automatically detects non-Korean messages and translates them to Korean using **Google Gemini**.
-*   **Markdown Export**: Saves messages as `.md` files, preserving original formatting, hyperlinks, and URLs. Messages are consolidated into a single file per channel per day (`channel_YYYYMMDD.md`).
-*   **Duplicate Prevention**: Uses a local SQLite database to prevent saving duplicate messages.
-*   **GUI-based Login**: Convenient Telegram login with a popup dialog for phone number and code entry.
-
-## Prerequisites
-
-1.  **Python 3.8** or higher.
-2.  **Telegram API Credentials**:
-    *   Go to [my.telegram.org](https://my.telegram.org) and log in.
-    *   Select **API development tools**.
-    *   Create a new application to get your `API_ID` and `API_HASH`.
-3.  **Google Gemini API Key**:
-    *   Get an API key from [Google AI Studio](https://aistudio.google.com/).
-
-## Installation
-
-1.  Clone or download this repository.
-2.  Install the required dependencies:
-    ```bash
-    pip install -r TeleKB/requirements.txt
-    ```
-
-## Configuration
-
-1.  Create a `.env` file in the project root (copy from `.env.example`).
-2.  Fill in your credentials:
-    ```ini
-    API_ID=12345678
-    API_HASH=your_telegram_api_hash
-    GEMINI_API_KEY=your_gemini_api_key
-    ```
-
-## Usage
-
-### 1. Running the Application
-Run the `main.py` script:
-```bash
-python main.py
-```
-
-### 2. First-Time Login
-*   When you try to add a channel for the first time, a **Login Dialog** will appear.
-*   Enter your phone number (including country code, e.g., `+821012345678`).
-*   Enter the verification code sent to your Telegram app.
-*   (If enabled) Enter your Two-Step Verification password.
-*   Once logged in, a `telekb_session.session` file will be created locally.
-
-### 3. Managing Channels
-*   Click **Channel Management**.
-*   **Add Channel**: Click "Add Channel", select the channels/groups you want to archive, and click "Add Selected".
-*   **Delete Channel**: Select a channel and click "Delete Channel" to remove it from the database permanently.
-
-### 4. Collecting Messages
-*   In the main window, choose an **Output Directory**.
-*   Click **Run Collection**.
-*   The application will fetch new messages, translate them if necessary, and save them as Markdown files in the selected folder using a `YYYY-MM` directory structure.
-
-## Troubleshooting
-
-*   **Login Issues**: If you face persistent login errors, try deleting the `telekb_session.session` file and logging in again.
-*   **Database Locked**: If you see "database is locked" errors, ensure only one instance of the app is running. (The app is designed to handle concurrency internally).
-*   **Translation Errors**: Verify your Gemini API Key is valid and has quota remaining.
-*   **Channels Not Loading**: Use the "Refresh" button in Channel Management or check your internet connection.
-
-## License
-MIT License
+**TeleKB** is a powerful local GUI application designed to transform your Telegram subscriptions into a structured, searchable, and translated personal knowledge base. It fetches messages from channels and groups, identifies foreign languages, and uses **Google Gemini AI** to provide high-quality Korean translations—all saved as neat Markdown files.
 
 ---
 
-# TeleKB (Telegram Knowledge Base)
+## ✨ Key Features
 
-TeleKB는 구독 중인 텔레그램 채널과 그룹의 메시지를 수집하는 로컬 GUI 애플리케이션입니다. 한국어가 아닌 메시지를 자동으로 감지하여 구글 Gemini API로 번역하고, 나만의 지식 베이스를 위해 Markdown 파일로 저장합니다.
+*   **🔄 Multi-device Synchronization (New!)**: Seamlessly sync your channel list and collection progress across multiple devices using your GitHub-managed output directory. No more duplicate messages or missing history!
+*   **📂 Intelligent Markdown Export**: Saves messages in a clean `YYYY-MM/channel_YYYYMMDD.md` structure. Preserves original formatting, hyperlinks, and media links.
+*   **🤖 AI-Powered Translation**: Automatically detects non-Korean text and provides context-aware translations via **Google Gemini**.
+*   **🖼️ Media Archiving**: Automatically downloads images from messages and links them directly within your Markdown files.
+*   **🛠️ Simple Channel Management**: A user-friendly GUI to add, remove, and manage your source channels without touching the database.
+*   **🔐 Privacy First**: Your Telegram session and database stay local. Your data, your rules.
 
-## 주요 기능
+---
 
-*   **채널 관리**: GUI를 통해 채널 통계를 확인하고 추가하거나 완전히 삭제(Hard Delete)할 수 있습니다.
-*   **스마트 수집**: 마지막 실행 이후의 새로운 메시지만 수집합니다.
-*   **자동 번역**: 비한국어 메시지를 감지하여 **Google Gemini**로 자동 번역합니다.
-*   **Markdown 내보내기**: 원본 서식, 하이퍼링크, URL을 유지한 채 `.md` 파일로 저장합니다. 메시지는 채널별/일자별로 하나의 파일(`channel_YYYYMMDD.md`)에 통합되어 저장됩니다.
-*   **중복 방지**: 로컬 SQLite 데이터베이스를 사용하여 중복 메시지 저장을 방지합니다.
-*   **GUI 기반 로그인**: 전화번호 및 인증 코드 입력을 위한 팝업 대화상자를 통해 편리하게 로그인할 수 있습니다.
+## 📡 Multi-device Sync: How it Works
 
-## 사전 요구 사항
+TeleKB now includes a robust synchronization system designed for users who manage their files via **GitHub**, **Dropbox**, or **Google Drive**.
 
-1.  **Python 3.8** 이상.
-2.  **Telegram API 자격 증명**:
-    *   [my.telegram.org](https://my.telegram.org)에 로그인합니다.
-    *   **API development tools**를 선택합니다.
-    *   새 애플리케이션을 생성하여 `API_ID`와 `API_HASH`를 발급받습니다.
-3.  **Google Gemini API 키**:
-    *   [Google AI Studio](https://aistudio.google.com/)에서 API 키를 발급받습니다.
+1.  **Shared State**: A `sync_state.json` file is automatically created in your selected **Output Directory**.
+2.  **Seamless Continuity**: When you run TeleKB on a new machine, it reads this JSON file to automatically add your channels and resume from the exact last message collected on other devices.
+3.  **Conflict-Free**: The local database handles binary storage, while the JSON ensures text-based, Git-friendly synchronization of metadata.
 
-## 설치 방법
+---
 
-1.  이 저장소를 클론하거나 다운로드합니다.
-2.  필요한 의존성 패키지를 설치합니다:
+## 🛠️ Installation
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-repo/TeleKB.git
+    cd TeleKB
+    ```
+2.  **Install dependencies**:
     ```bash
     pip install -r TeleKB/requirements.txt
     ```
 
-## 설정
+## ⚙️ Configuration
 
-1.  프로젝트 루트에 `.env` 파일을 생성합니다 (`.env.example` 복사).
-2.  발급받은 키를 입력합니다:
+1.  Create a `.env` file in the root directory (refer to `.env.template`).
+2.  Add your credentials:
     ```ini
     API_ID=12345678
-    API_HASH=your_telegram_api_hash
-    GEMINI_API_KEY=your_gemini_api_key
+    API_HASH=your_telegram_hash
+    GEMINI_API_KEY=your_gemini_key
     ```
+    *   *Get Telegram keys at [my.telegram.org](https://my.telegram.org)*
+    *   *Get Gemini keys at [Google AI Studio](https://aistudio.google.com/)*
 
-## 사용 방법
+---
 
-### 1. 애플리케이션 실행
-`main.py` 스크립트를 실행합니다:
-```bash
-python main.py
-```
+## 🚀 Usage
 
-### 2. 최초 로그인
-*   채널을 추가하려고 할 때 **로그인 대화상자**가 나타납니다.
-*   전화번호(국가 코드 포함, 예: `+821012345678`)를 입력합니다.
-*   텔레그램 앱으로 전송된 인증 코드를 입력합니다.
-*   (설정된 경우) 2단계 인증 비밀번호를 입력합니다.
-*   로그인이 완료되면 로컬에 `telekb_session.session` 파일이 생성됩니다.
+1.  **Start the App**: `python main.py`
+2.  **Select Output**: Choose the folder you sync with GitHub/Cloud storage.
+3.  **Manage Channels**: Add your favorite Telegram channels.
+4.  **Run Collection**: Click the button and watch your knowledge base grow!
 
-### 3. 채널 관리
-*   **Channel Management** 버튼을 클릭합니다.
-*   **Add Channel**: "Add Channel"을 클릭하고 수집할 채널/그룹을 선택한 뒤 "Add Selected"를 누릅니다.
-*   **Delete Channel**: 채널을 선택하고 "Delete Channel"을 누르면 데이터베이스에서 영구적으로 삭제됩니다.
+---
 
-### 4. 메시지 수집
-*   메인 창에서 **Output Directory**를 선택합니다.
-*   **Run Collection**을 클릭합니다.
-*   앱이 새로운 메시지를 가져와 번역(필요 시)하고, 선택한 폴더 내 `YYYY-MM` 디렉토리에 Markdown 파일로 저장합니다.
+⭐ **If you find this useful, please [give it a star](https://github.com/ge4sis/TeleKB)! It helps our project grow.**
 
-## 문제 해결
+---
 
-*   **로그인 문제**: 지속적인 로그인 오류 발생 시 `telekb_session.session` 파일을 삭제하고 다시 시도하세요.
-*   **데이터베이스 잠금(Locked)**: "database is locked" 오류가 발생하면 앱이 중복 실행되고 있지 않은지 확인하세요. (앱은 내부적으로 동시성을 처리하도록 설계되었습니다.)
-*   **번역 오류**: Gemini API 키가 유효한지, 할당량이 남아있는지 확인하세요.
-*   **채널 로딩 불가**: 채널 관리 창에서 "Refresh" 버튼을 누르거나 인터넷 연결을 확인하세요.
+# 🇰🇷 TeleKB (Telegram Knowledge Base) - 한국어 가이드
 
-## 라이선스
-MIT License
+**TeleKB**는 텔레그램 구독 정보를 체계적인 지식 베이스로 변환해주는 로컬 GUI 도구입니다. 복잡한 채널 메시지를 모으고, 외국어는 **Google Gemini AI**를 통해 한국어로 번역하여 깔끔한 Markdown 파일로 저장합니다.
+
+## ✨ 주요 기능
+
+*   **🔄 기기 간 동기화 (최신!)**: GitHub 등으로 관리하는 출력 폴더를 통해 채널 목록과 수집 시점을 여러 기기에서 완벽하게 공유합니다. 
+*   **📂 스마트 Markdown 내보내기**: `YYYY-MM/채널명_YYYYMMDD.md` 구조로 깔끔하게 저장하며, 원본 링크와 서식을 그대로 보존합니다.
+*   **🤖 AI 자동 번역**: 한국어가 아닌 메시지만 골라내어 **Google Gemini**가 자연스러운 한국어로 번역합니다.
+*   **🖼️ 이미지 아카이빙**: 메시지 내 이미지를 자동 다운로드하고 Markdown 문서 내에 로컬 링크로 삽입합니다.
+*   **🛠️ 직관적인 GUI**: 복잡한 설정 없이 버튼 클릭만으로 채널을 관리하고 수집을 실행할 수 있습니다.
+
+## 📡 동기화 기능 활용법
+
+GitHub와 같은 클라우드 동기화 서비스를 사용 중이라면 더욱 강력하게 활용할 수 있습니다.
+
+1. **상태 공유**: 설정된 출력 폴더에 `sync_state.json` 파일이 생성됩니다.
+2. **이어하기**: 기기 A에서 수집한 후 Push하면, 기기 B에서 Pull 후 실행 시 **별도 설정 없이** 이어서 수집을 시작합니다.
+3. **병합 최적화**: 텍스트 기반의 JSON 파일로 연동되므로 Git 충돌 걱정 없이 안전하게 동기화됩니다.
+
+## 🚀 시작하기
+
+1. `main.py` 실행 후 **Output Directory**를 GitHub 동기화 폴더로 지정하세요.
+2. **Channel Management**에서 원하는 채널을 추가하세요.
+3. **Run Collection**을 누르면 수집이 시작됩니다.
+
+---
+
+## 📄 License
+MIT License. 상세 내용은 [LICENSE](LICENSE) 파일을 확인하세요.
+
+---
+
+🌟 **이 프로젝트가 도움이 되었다면 [여기에서 Star](https://github.com/ge4sis/TeleKB)를 눌러 응원해 주세요! 프로젝트가 지속되는 데 큰 힘이 됩니다.**

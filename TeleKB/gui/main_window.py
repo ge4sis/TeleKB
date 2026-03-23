@@ -38,6 +38,8 @@ class MainWindow:
         
         if not os.path.exists(self.output_dir.get()):
             os.makedirs(self.output_dir.get())
+            
+        self.sync_from_file()
 
     def create_widgets(self):
         frame_top = ttk.LabelFrame(self.root, text="Output Directory", padding=10)
@@ -76,6 +78,7 @@ class MainWindow:
         if d:
             self.output_dir.set(d)
             self.settings.set("output_dir", d)
+            self.sync_from_file()
 
     def log(self, message):
         self.log_queue.put(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {message}")
@@ -246,7 +249,36 @@ class MainWindow:
             self.btn_channels.configure(state=tk.NORMAL)
             self.lbl_status.config(text="Ready")
             self.log("Collection finished.")
+            self.sync_to_file()
         self.root.after(0, _update)
+
+    def sync_from_file(self):
+        output_path = self.output_dir.get()
+        if not output_path or not os.path.exists(output_path):
+            return
+        
+        self.log("Checking for sync state file...")
+        sync_data = FileManager.load_sync_state(output_path)
+        if sync_data:
+            try:
+                self.db.update_from_sync_data(sync_data)
+                self.log(f"Synced {len(sync_data)} channels from sync_state.json.")
+            except Exception as e:
+                self.log(f"Error updating from sync file: {e}")
+        else:
+             self.log("No sync file found or file is empty.")
+
+    def sync_to_file(self):
+        output_path = self.output_dir.get()
+        if not output_path or not os.path.exists(output_path):
+            return
+        
+        try:
+            sync_data = self.db.get_sync_data()
+            FileManager.save_sync_state(sync_data, output_path)
+            self.log("State saved to sync_state.json.")
+        except Exception as e:
+            self.log(f"Error saving sync state: {e}")
 
     def _show_login_dialog(self, prompt_type, future):
         dialog = tk.Toplevel(self.root)

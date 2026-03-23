@@ -123,6 +123,42 @@ class Database:
         cursor.execute("UPDATE channels SET title = ?, updated_at = ? WHERE channel_id = ?", (title, now, channel_id))
         conn.commit()
 
+    def get_sync_data(self) -> List[dict]:
+        """Returns all channel metadata for synchronization."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT channel_id, title, username, last_message_id, is_enabled FROM channels")
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
+    def update_from_sync_data(self, sync_data: List[dict]):
+        """Updates local database from synchronization data."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = int(time.time())
+        for item in sync_data:
+            channel_id = item['channel_id']
+            title = item['title']
+            username = item.get('username')
+            last_message_id = item['last_message_id']
+            is_enabled = item.get('is_enabled', 1)
+            
+            cursor.execute("SELECT 1 FROM channels WHERE channel_id = ?", (channel_id,))
+            if cursor.fetchone():
+                # Update existing channel
+                cursor.execute('''
+                    UPDATE channels 
+                    SET title = ?, username = ?, last_message_id = MAX(last_message_id, ?), is_enabled = ?, updated_at = ?
+                    WHERE channel_id = ?
+                ''', (title, username, last_message_id, is_enabled, now, channel_id))
+            else:
+                # Add new channel from sync
+                cursor.execute('''
+                    INSERT INTO channels (channel_id, title, username, last_message_id, is_enabled, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (channel_id, title, username, last_message_id, is_enabled, now, now))
+        conn.commit()
+
     def close(self):
         if self.conn:
             self.conn.close()

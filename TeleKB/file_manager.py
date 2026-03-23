@@ -73,3 +73,29 @@ class FileManager:
             f.write(content)
             
         return filepath
+
+    @staticmethod
+    def save_sync_state(data: list, output_dir: str):
+        """Saves synchronization state to a JSON file in the output directory."""
+        import json
+        sync_file = os.path.join(output_dir, "sync_state.json")
+        try:
+            with open(sync_file, "w", encoding="utf-8") as f:
+                json.dump(sync_file_data := {"channels": data, "updated_at": int(datetime.datetime.now().timestamp())}, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error saving sync state: {e}")
+
+    @staticmethod
+    def load_sync_state(output_dir: str) -> list:
+        """Loads synchronization state from the JSON file in the output directory."""
+        import json
+        sync_file = os.path.join(output_dir, "sync_state.json")
+        if not os.path.exists(sync_file):
+            return []
+        try:
+            with open(sync_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return data.get("channels", [])
+        except Exception as e:
+            print(f"Error loading sync state: {e}")
+            return []
